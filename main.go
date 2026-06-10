@@ -5,9 +5,11 @@ import (
 	"github.com/CauaMarques12/raizes-do-nordeste-api/src/controller/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+  "github.com/CauaMarques12/raizes-do-nordeste-api/src/configuration/logger"
 )
 
 func main() {
+  logger.Info("Starting Raizes do Nordeste API")
   err := godotenv.Load()
   if err != nil {
     log.Fatal("Error loading .env file")
