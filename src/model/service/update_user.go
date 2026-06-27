@@ -5,9 +5,15 @@ import (
 	"github.com/CauaMarques12/raizes-do-nordeste-api/src/model"
 )
 
-func (*userDomainService) UpdateUser(
+func (ud *userDomainService) UpdateUser(
 	userId string,
 	userDomain model.UserDomainInterface,
-	)  *rest_err.RestErr {
-	return nil
+) (model.UserDomainInterface, *rest_err.RestErr) {
+	if userDomain.GetPassword() != "" {
+		if err := userDomain.EncryptPassword(); err != nil {
+			return nil, err
+		}
+	}
+
+	return ud.repository.UpdateUser(userId, userDomain)
 }

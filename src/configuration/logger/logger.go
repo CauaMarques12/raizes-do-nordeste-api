@@ -3,19 +3,21 @@ package logger
 import (
 	"os"
 	"strings"
+	"sync"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 var (
-	log *zap.Logger
+	log  *zap.Logger
+	once sync.Once
 
 	OUTPUT_LOGS = "OUTPUT_LOGS"
 	LOG_LEVEL   = "LOG_LEVEL"
 )
 
-func init() {
+func initLogger() {
 	logConfig := zap.Config{
 		OutputPaths: []string{getOutputLogs()},
 		Level:       zap.NewAtomicLevelAt(getLevelLogs()),
@@ -34,24 +36,25 @@ func init() {
 }
 
 func Info(message string, tags ...zap.Field) {
+	once.Do(initLogger)
 	log.Info(message, tags...)
 	log.Sync()
 }
 
 func Error(message string, err error, tags ...zap.Field) {
+	once.Do(initLogger)
 	tags = append(tags, zap.NamedError("error", err))
-	log.Info(message, tags...)
+	log.Error(message, tags...)
 	log.Sync()
 }
 
-
 func getOutputLogs() string {
-	 output := strings.ToLower(strings.TrimSpace(os.Getenv(OUTPUT_LOGS)))
-	 if output == "" {
-		 return "stdout"
-	 }
+	output := strings.ToLower(strings.TrimSpace(os.Getenv(OUTPUT_LOGS)))
+	if output == "" {
+		return "stdout"
+	}
 
-	 return output
+	return output
 }
 
 func getLevelLogs() zapcore.Level {

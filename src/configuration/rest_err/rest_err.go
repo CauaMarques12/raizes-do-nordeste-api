@@ -14,11 +14,9 @@ type Causes struct {
 	Message string `json:"message"`
 }
 
-
-func(r *RestErr) Error() string {
+func (r *RestErr) Error() string {
 	return r.Message
 }
-
 
 func NewRestErr(message string, code int, err string, causes []Causes) *RestErr {
 	return &RestErr{
@@ -50,10 +48,9 @@ func NewBadRequestValidationError(message string, causes []Causes) *RestErr {
 		Message: message,
 		Err:     "Bad Request",
 		Code:    http.StatusBadRequest,
-		Causes: causes,
+		Causes:  causes,
 	}
 }
-
 
 func NewInternalServerError(message string) *RestErr {
 	return &RestErr{
@@ -64,12 +61,19 @@ func NewInternalServerError(message string) *RestErr {
 
 }
 
-
 func NewNotFoundError(message string) *RestErr {
 	return &RestErr{
 		Message: message,
 		Err:     "not_found",
 		Code:    http.StatusNotFound,
+	}
+}
+
+func NewConflictError(message string) *RestErr {
+	return &RestErr{
+		Message: message,
+		Err:     "conflict",
+		Code:    http.StatusConflict,
 	}
 }
 
