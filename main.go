@@ -20,10 +20,12 @@ func main() {
 	mongodb.InitConnection()
 
 	userService := service.NewUserDomainService()
+	authService := service.NewAuthDomainService()
 	userController := controller.NewUserControlleInterface(userService)
+	authController := controller.NewAuthControllerInterface(authService)
 
 	router := gin.Default()
-	routes.InitRoutes(&router.RouterGroup, userController)
+	routes.InitRoutes(&router.RouterGroup, userController, authController)
 
 	port := os.Getenv("PORT")
 	if port == "" {
