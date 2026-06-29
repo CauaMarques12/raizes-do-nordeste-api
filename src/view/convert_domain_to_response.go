@@ -129,6 +129,72 @@ func ConvertOrderDomainsToResponse(
 	return orderResponses
 }
 
+func ConvertLoyaltyBalanceDomainToResponse(
+	loyaltyBalanceDomain model.LoyaltyBalanceDomainInterface,
+) response.LoyaltyBalanceResponse {
+	return response.LoyaltyBalanceResponse{
+		ID:        loyaltyBalanceDomain.GetID(),
+		ClientID:  loyaltyBalanceDomain.GetUserID(),
+		Points:    loyaltyBalanceDomain.GetPoints(),
+		Active:    loyaltyBalanceDomain.GetActive(),
+		CreatedAt: loyaltyBalanceDomain.GetCreatedAt(),
+		UpdatedAt: loyaltyBalanceDomain.GetUpdatedAt(),
+	}
+}
+
+func ConvertLoyaltyMovementDomainToResponse(
+	loyaltyMovementDomain model.LoyaltyMovementDomainInterface,
+) response.LoyaltyMovementResponse {
+	return response.LoyaltyMovementResponse{
+		ID:           loyaltyMovementDomain.GetID(),
+		ClientID:     loyaltyMovementDomain.GetUserID(),
+		Type:         loyaltyMovementDomain.GetType(),
+		Points:       loyaltyMovementDomain.GetPoints(),
+		Reason:       loyaltyMovementDomain.GetReason(),
+		OrderID:      loyaltyMovementDomain.GetOrderID(),
+		BalanceAfter: loyaltyMovementDomain.GetBalanceAfter(),
+		CreatedAt:    loyaltyMovementDomain.GetCreatedAt(),
+	}
+}
+
+func ConvertLoyaltyMovementDomainsToResponse(
+	loyaltyMovementDomains []model.LoyaltyMovementDomainInterface,
+) []response.LoyaltyMovementResponse {
+	loyaltyMovementResponses := make([]response.LoyaltyMovementResponse, 0, len(loyaltyMovementDomains))
+	for _, loyaltyMovementDomain := range loyaltyMovementDomains {
+		loyaltyMovementResponses = append(loyaltyMovementResponses, ConvertLoyaltyMovementDomainToResponse(loyaltyMovementDomain))
+	}
+
+	return loyaltyMovementResponses
+}
+
+func ConvertPaymentDomainToResponse(
+	paymentDomain model.PaymentDomainInterface,
+) response.PaymentResponse {
+	return response.PaymentResponse{
+		ID:                   paymentDomain.GetID(),
+		OrderID:              paymentDomain.GetOrderID(),
+		Method:               paymentDomain.GetMethod(),
+		AmountCents:          paymentDomain.GetAmountCents(),
+		Status:               paymentDomain.GetStatus(),
+		GatewayTransactionID: paymentDomain.GetGatewayTransactionID(),
+		Message:              paymentDomain.GetMessage(),
+		CreatedAt:            paymentDomain.GetCreatedAt(),
+		UpdatedAt:            paymentDomain.GetUpdatedAt(),
+	}
+}
+
+func ConvertPaymentDomainsToResponse(
+	paymentDomains []model.PaymentDomainInterface,
+) []response.PaymentResponse {
+	paymentResponses := make([]response.PaymentResponse, 0, len(paymentDomains))
+	for _, paymentDomain := range paymentDomains {
+		paymentResponses = append(paymentResponses, ConvertPaymentDomainToResponse(paymentDomain))
+	}
+
+	return paymentResponses
+}
+
 func convertOrderItemsToResponse(
 	items []model.OrderItemDomain,
 ) []response.OrderItemResponse {

@@ -66,12 +66,12 @@ func (od *orderDomainService) validateStock(unitID string, requiredByProduct map
 		balance, err := od.stockRepository.FindBalance(unitID, productID)
 		if err != nil {
 			if err.Code == 404 {
-				return rest_err.NewConflictError("Stock is not available")
+				return rest_err.NewConflictError("Estoque nao disponivel")
 			}
 			return err
 		}
 		if balance.GetQuantity() < requiredQuantity {
-			return rest_err.NewConflictError("Insufficient stock")
+			return rest_err.NewConflictError("Estoque insuficiente")
 		}
 	}
 

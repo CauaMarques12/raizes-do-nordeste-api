@@ -25,12 +25,16 @@ func main() {
 	productService := service.NewProductDomainService()
 	stockService := service.NewStockDomainService()
 	orderService := service.NewOrderDomainService()
+	paymentService := service.NewPaymentDomainService()
+	loyaltyService := service.NewLoyaltyDomainService()
 	userController := controller.NewUserControlleInterface(userService)
 	authController := controller.NewAuthControllerInterface(authService)
 	unitController := controller.NewUnitControllerInterface(unitService)
 	productController := controller.NewProductControllerInterface(productService)
 	stockController := controller.NewStockControllerInterface(stockService)
 	orderController := controller.NewOrderControllerInterface(orderService)
+	paymentController := controller.NewPaymentControllerInterface(paymentService)
+	loyaltyController := controller.NewLoyaltyControllerInterface(loyaltyService)
 
 	router := gin.Default()
 	routes.InitRoutes(
@@ -41,6 +45,8 @@ func main() {
 		productController,
 		stockController,
 		orderController,
+		paymentController,
+		loyaltyController,
 	)
 
 	port := os.Getenv("PORT")

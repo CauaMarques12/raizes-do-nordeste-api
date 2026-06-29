@@ -118,12 +118,12 @@ func (sr *stockRepository) decreaseStock(unitID, productID string, quantity int6
 	currentBalance, err := sr.FindBalance(unitID, productID)
 	if err != nil {
 		if err.Code == 404 {
-			return nil, rest_err.NewConflictError("Stock is not available")
+			return nil, rest_err.NewConflictError("Estoque nao disponivel")
 		}
 		return nil, err
 	}
 	if currentBalance.GetQuantity() < quantity {
-		return nil, rest_err.NewConflictError("Insufficient stock")
+		return nil, rest_err.NewConflictError("Estoque insuficiente")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -146,7 +146,7 @@ func (sr *stockRepository) decreaseStock(unitID, productID string, quantity int6
 		return nil, rest_err.NewInternalServerError("Error trying to decrease stock")
 	}
 	if result.MatchedCount == 0 {
-		return nil, rest_err.NewConflictError("Insufficient stock")
+		return nil, rest_err.NewConflictError("Estoque insuficiente")
 	}
 
 	return sr.FindBalance(unitID, productID)

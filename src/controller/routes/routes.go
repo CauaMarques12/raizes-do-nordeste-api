@@ -14,6 +14,8 @@ func InitRoutes(
 	productController controller.ProductControllerInterface,
 	stockController controller.StockControllerInterface,
 	orderController controller.OrderControllerInterface,
+	paymentController controller.PaymentControllerInterface,
+	loyaltyController controller.LoyaltyControllerInterface,
 ) {
 	r.POST("/auth/login", authController.Login)
 	r.POST("/usuarios", userController.CreateUser)
@@ -21,6 +23,7 @@ func InitRoutes(
 	auth := r.Group("/")
 	auth.Use(middleware.AuthMiddleware())
 	auth.GET("/usuarios/me", userController.FindLoggedUser)
+	auth.PATCH("/usuarios/me/consentimentos/fidelidade", userController.UpdateLoggedUserFidelityConsent)
 	auth.GET("/usuarios/:userId", middleware.RoleMiddleware("ADMIN", "GERENTE"), userController.FindUserById)
 	auth.GET("/usuarios", middleware.RoleMiddleware("ADMIN", "GERENTE"), userController.FindUserByEmail)
 	auth.PATCH("/usuarios/:userId", middleware.RoleMiddleware("ADMIN", "GERENTE"), userController.UpdateUser)
@@ -44,4 +47,12 @@ func InitRoutes(
 	auth.GET("/pedidos/:orderId", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "COZINHA", "CLIENTE"), orderController.FindOrderById)
 	auth.PATCH("/pedidos/:orderId/status", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "COZINHA"), orderController.UpdateOrderStatus)
 	auth.PATCH("/pedidos/:orderId/cancelamento", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE"), orderController.CancelOrder)
+
+	auth.POST("/pagamentos", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE"), paymentController.CreatePayment)
+	auth.GET("/pagamentos", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE"), paymentController.FindPaymentsByOrderId)
+	auth.GET("/pagamentos/:paymentId", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE"), paymentController.FindPaymentById)
+
+	auth.GET("/fidelidade/saldo", middleware.RoleMiddleware("ADMIN", "GERENTE", "CLIENTE"), loyaltyController.FindBalance)
+	auth.GET("/fidelidade/historico", middleware.RoleMiddleware("ADMIN", "GERENTE", "CLIENTE"), loyaltyController.FindHistory)
+	auth.POST("/fidelidade/resgates", middleware.RoleMiddleware("ADMIN", "GERENTE", "CLIENTE"), loyaltyController.RedeemPoints)
 }

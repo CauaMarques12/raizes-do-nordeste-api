@@ -15,3 +15,7 @@ type UserUpdateRequest struct {
 	Role                 string `json:"role" binding:"omitempty,oneof=CLIENTE ATENDENTE COZINHA GERENTE ADMIN"`
 	FidelidadeConsentida *bool  `json:"fidelidadeConsentida"`
 }
+
+type FidelityConsentRequest struct {
+	FidelidadeConsentida *bool `json:"fidelidadeConsentida" binding:"required"`
+}
