@@ -23,13 +23,25 @@ func main() {
 	authService := service.NewAuthDomainService()
 	unitService := service.NewUnitDomainService()
 	productService := service.NewProductDomainService()
+	stockService := service.NewStockDomainService()
+	orderService := service.NewOrderDomainService()
 	userController := controller.NewUserControlleInterface(userService)
 	authController := controller.NewAuthControllerInterface(authService)
 	unitController := controller.NewUnitControllerInterface(unitService)
 	productController := controller.NewProductControllerInterface(productService)
+	stockController := controller.NewStockControllerInterface(stockService)
+	orderController := controller.NewOrderControllerInterface(orderService)
 
 	router := gin.Default()
-	routes.InitRoutes(&router.RouterGroup, userController, authController, unitController, productController)
+	routes.InitRoutes(
+		&router.RouterGroup,
+		userController,
+		authController,
+		unitController,
+		productController,
+		stockController,
+		orderController,
+	)
 
 	port := os.Getenv("PORT")
 	if port == "" {

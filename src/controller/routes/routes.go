@@ -12,6 +12,8 @@ func InitRoutes(
 	authController controller.AuthControllerInterface,
 	unitController controller.UnitControllerInterface,
 	productController controller.ProductControllerInterface,
+	stockController controller.StockControllerInterface,
+	orderController controller.OrderControllerInterface,
 ) {
 	r.POST("/auth/login", authController.Login)
 	r.POST("/usuarios", userController.CreateUser)
@@ -33,4 +35,13 @@ func InitRoutes(
 	auth.GET("/produtos", productController.FindProducts)
 	auth.GET("/produtos/:productId", productController.FindProductById)
 	auth.PATCH("/produtos/:productId", middleware.RoleMiddleware("ADMIN", "GERENTE"), productController.UpdateProduct)
+
+	auth.POST("/estoque/movimentacoes", middleware.RoleMiddleware("ADMIN", "GERENTE"), stockController.CreateStockMovement)
+	auth.GET("/estoque", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE"), stockController.FindStockBalance)
+
+	auth.POST("/pedidos", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE"), orderController.CreateOrder)
+	auth.GET("/pedidos", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "COZINHA"), orderController.FindOrders)
+	auth.GET("/pedidos/:orderId", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "COZINHA", "CLIENTE"), orderController.FindOrderById)
+	auth.PATCH("/pedidos/:orderId/status", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "COZINHA"), orderController.UpdateOrderStatus)
+	auth.PATCH("/pedidos/:orderId/cancelamento", middleware.RoleMiddleware("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE"), orderController.CancelOrder)
 }

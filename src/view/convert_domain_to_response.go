@@ -71,3 +71,76 @@ func ConvertProductDomainsToResponse(
 
 	return productResponses
 }
+
+func ConvertStockBalanceDomainToResponse(
+	stockDomain model.StockBalanceDomainInterface,
+) response.StockBalanceResponse {
+	return response.StockBalanceResponse{
+		ID:        stockDomain.GetID(),
+		UnitID:    stockDomain.GetUnitID(),
+		ProductID: stockDomain.GetProductID(),
+		Quantity:  stockDomain.GetQuantity(),
+		Active:    stockDomain.GetActive(),
+		CreatedAt: stockDomain.GetCreatedAt(),
+		UpdatedAt: stockDomain.GetUpdatedAt(),
+	}
+}
+
+func ConvertStockMovementDomainToResponse(
+	stockMovementDomain model.StockMovementDomainInterface,
+) response.StockMovementResponse {
+	return response.StockMovementResponse{
+		ID:           stockMovementDomain.GetID(),
+		UnitID:       stockMovementDomain.GetUnitID(),
+		ProductID:    stockMovementDomain.GetProductID(),
+		Type:         stockMovementDomain.GetType(),
+		Quantity:     stockMovementDomain.GetQuantity(),
+		Reason:       stockMovementDomain.GetReason(),
+		BalanceAfter: stockMovementDomain.GetBalanceAfter(),
+		CreatedAt:    stockMovementDomain.GetCreatedAt(),
+	}
+}
+
+func ConvertOrderDomainToResponse(
+	orderDomain model.OrderDomainInterface,
+) response.OrderResponse {
+	return response.OrderResponse{
+		ID:            orderDomain.GetID(),
+		ClientID:      orderDomain.GetClientID(),
+		UnitID:        orderDomain.GetUnitID(),
+		Channel:       orderDomain.GetChannel(),
+		PaymentMethod: orderDomain.GetPaymentMethod(),
+		Status:        orderDomain.GetStatus(),
+		TotalCents:    orderDomain.GetTotalCents(),
+		Items:         convertOrderItemsToResponse(orderDomain.GetItems()),
+		CreatedAt:     orderDomain.GetCreatedAt(),
+		UpdatedAt:     orderDomain.GetUpdatedAt(),
+	}
+}
+
+func ConvertOrderDomainsToResponse(
+	orderDomains []model.OrderDomainInterface,
+) []response.OrderResponse {
+	orderResponses := make([]response.OrderResponse, 0, len(orderDomains))
+	for _, orderDomain := range orderDomains {
+		orderResponses = append(orderResponses, ConvertOrderDomainToResponse(orderDomain))
+	}
+
+	return orderResponses
+}
+
+func convertOrderItemsToResponse(
+	items []model.OrderItemDomain,
+) []response.OrderItemResponse {
+	itemResponses := make([]response.OrderItemResponse, 0, len(items))
+	for _, item := range items {
+		itemResponses = append(itemResponses, response.OrderItemResponse{
+			ProductID:      item.ProductID,
+			Quantity:       item.Quantity,
+			UnitPriceCents: item.UnitPriceCents,
+			SubtotalCents:  item.SubtotalCents,
+		})
+	}
+
+	return itemResponses
+}
