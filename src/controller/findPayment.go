@@ -31,8 +31,13 @@ func (pc *paymentControllerInterface) FindPaymentsByOrderId(c *gin.Context) {
 		c.JSON(err.Code, err)
 		return
 	}
+	page, limit, paginationErr := getPagination(c)
+	if paginationErr != nil {
+		c.JSON(paginationErr.Code, paginationErr)
+		return
+	}
 
-	paymentDomains, err := pc.service.FindPaymentsByOrderID(orderID)
+	paymentDomains, err := pc.service.FindPaymentsByOrderID(orderID, page, limit)
 	if err != nil {
 		logger.Error("Erro ao tentar listar pagamentos por pedido", err, zap.String("jornada", "find_payments"))
 		c.JSON(err.Code, err)

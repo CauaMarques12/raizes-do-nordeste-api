@@ -9,6 +9,6 @@ func (pd *productDomainService) FindProduct(productID string) (model.ProductDoma
 	return pd.repository.FindProductByID(productID)
 }
 
-func (pd *productDomainService) FindProducts(category string) ([]model.ProductDomainInterface, *rest_err.RestErr) {
-	return pd.repository.FindProducts(category)
+func (pd *productDomainService) FindProducts(category string, page, limit int64) ([]model.ProductDomainInterface, *rest_err.RestErr) {
+	return pd.repository.FindProducts(category, page, limit)
 }

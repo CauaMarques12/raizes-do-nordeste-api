@@ -15,7 +15,7 @@ import (
 type OrderRepository interface {
 	CreateOrder(model.OrderDomainInterface) *rest_err.RestErr
 	FindOrderByID(string) (model.OrderDomainInterface, *rest_err.RestErr)
-	FindOrders(channel, status string) ([]model.OrderDomainInterface, *rest_err.RestErr)
+	FindOrders(channel, status string, page, limit int64) ([]model.OrderDomainInterface, *rest_err.RestErr)
 	UpdateStatus(orderID, status string) (model.OrderDomainInterface, *rest_err.RestErr)
 }
 
@@ -65,7 +65,7 @@ func (or *orderRepository) FindOrderByID(orderID string) (model.OrderDomainInter
 	return entity.toDomain(), nil
 }
 
-func (or *orderRepository) FindOrders(channel, status string) ([]model.OrderDomainInterface, *rest_err.RestErr) {
+func (or *orderRepository) FindOrders(channel, status string, page, limit int64) ([]model.OrderDomainInterface, *rest_err.RestErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -77,7 +77,13 @@ func (or *orderRepository) FindOrders(channel, status string) ([]model.OrderDoma
 		filter["status"] = status
 	}
 
-	cursor, err := or.collection.Find(ctx, filter)
+	findOptions := options.Find().SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	if page > 0 && limit > 0 {
+		findOptions.SetSkip((page - 1) * limit)
+		findOptions.SetLimit(limit)
+	}
+
+	cursor, err := or.collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		return nil, rest_err.NewInternalServerError("Error trying to find orders")
 	}

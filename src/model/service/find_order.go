@@ -9,6 +9,6 @@ func (od *orderDomainService) FindOrder(orderID string) (model.OrderDomainInterf
 	return od.orderRepository.FindOrderByID(orderID)
 }
 
-func (od *orderDomainService) FindOrders(channel, status string) ([]model.OrderDomainInterface, *rest_err.RestErr) {
-	return od.orderRepository.FindOrders(channel, status)
+func (od *orderDomainService) FindOrders(channel, status string, page, limit int64) ([]model.OrderDomainInterface, *rest_err.RestErr) {
+	return od.orderRepository.FindOrders(channel, status, page, limit)
 }

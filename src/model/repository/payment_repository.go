@@ -15,7 +15,7 @@ import (
 type PaymentRepository interface {
 	CreatePayment(model.PaymentDomainInterface) *rest_err.RestErr
 	FindPaymentByID(string) (model.PaymentDomainInterface, *rest_err.RestErr)
-	FindPaymentsByOrderID(string) ([]model.PaymentDomainInterface, *rest_err.RestErr)
+	FindPaymentsByOrderID(string, int64, int64) ([]model.PaymentDomainInterface, *rest_err.RestErr)
 }
 
 type paymentRepository struct {
@@ -66,14 +66,20 @@ func (pr *paymentRepository) FindPaymentByID(paymentID string) (model.PaymentDom
 	return entity.toDomain(), nil
 }
 
-func (pr *paymentRepository) FindPaymentsByOrderID(orderID string) ([]model.PaymentDomainInterface, *rest_err.RestErr) {
+func (pr *paymentRepository) FindPaymentsByOrderID(orderID string, page, limit int64) ([]model.PaymentDomainInterface, *rest_err.RestErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	findOptions := options.Find().SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	if page > 0 && limit > 0 {
+		findOptions.SetSkip((page - 1) * limit)
+		findOptions.SetLimit(limit)
+	}
 
 	cursor, err := pr.collection.Find(
 		ctx,
 		bson.M{"orderId": orderID},
-		options.Find().SetSort(bson.D{{Key: "createdAt", Value: -1}}),
+		findOptions,
 	)
 	if err != nil {
 		return nil, rest_err.NewInternalServerError("Erro ao tentar buscar pagamentos")

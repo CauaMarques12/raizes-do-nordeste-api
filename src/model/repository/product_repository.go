@@ -15,7 +15,7 @@ import (
 type ProductRepository interface {
 	CreateProduct(model.ProductDomainInterface) *rest_err.RestErr
 	FindProductByID(string) (model.ProductDomainInterface, *rest_err.RestErr)
-	FindProducts(string) ([]model.ProductDomainInterface, *rest_err.RestErr)
+	FindProducts(string, int64, int64) ([]model.ProductDomainInterface, *rest_err.RestErr)
 	UpdateProduct(string, model.ProductDomainInterface) (model.ProductDomainInterface, *rest_err.RestErr)
 }
 
@@ -65,7 +65,7 @@ func (pr *productRepository) FindProductByID(productID string) (model.ProductDom
 	return entity.toDomain(), nil
 }
 
-func (pr *productRepository) FindProducts(category string) ([]model.ProductDomainInterface, *rest_err.RestErr) {
+func (pr *productRepository) FindProducts(category string, page, limit int64) ([]model.ProductDomainInterface, *rest_err.RestErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -74,7 +74,13 @@ func (pr *productRepository) FindProducts(category string) ([]model.ProductDomai
 		filter["category"] = category
 	}
 
-	cursor, err := pr.collection.Find(ctx, filter)
+	findOptions := options.Find()
+	if page > 0 && limit > 0 {
+		findOptions.SetSkip((page - 1) * limit)
+		findOptions.SetLimit(limit)
+	}
+
+	cursor, err := pr.collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		return nil, rest_err.NewInternalServerError("Error trying to find products")
 	}

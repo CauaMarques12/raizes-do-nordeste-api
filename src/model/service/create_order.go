@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/CauaMarques12/raizes-do-nordeste-api/src/configuration/rest_err"
 	"github.com/CauaMarques12/raizes-do-nordeste-api/src/model"
@@ -29,7 +30,13 @@ func (od *orderDomainService) CreateOrder(orderDomain model.OrderDomainInterface
 	}
 
 	orderDomain.SetItems(items)
-	orderDomain.SetTotalCents(totalCents)
+	discountCents, totalAfterDiscount, promotionCode, err := od.applyPromotion(orderDomain.GetPromotionCode(), totalCents)
+	if err != nil {
+		return err
+	}
+	orderDomain.SetPromotionCode(promotionCode)
+	orderDomain.SetDiscountCents(discountCents)
+	orderDomain.SetTotalCents(totalAfterDiscount)
 
 	return od.orderRepository.CreateOrder(orderDomain)
 }
@@ -93,4 +100,24 @@ func (od *orderDomainService) decreaseStock(unitID string, requiredByProduct map
 	}
 
 	return nil
+}
+
+func (od *orderDomainService) applyPromotion(promotionCode string, totalCents int64) (int64, int64, string, *rest_err.RestErr) {
+	if promotionCode == "" {
+		return 0, totalCents, "", nil
+	}
+
+	normalizedCode := strings.ToUpper(promotionCode)
+	promotion, err := od.promotionRepository.FindPromotionByCode(normalizedCode)
+	if err != nil {
+		return 0, 0, "", err
+	}
+
+	discountCents := totalCents * promotion.GetDiscountPercent() / 100
+	totalAfterDiscount := totalCents - discountCents
+	if totalAfterDiscount < 1 {
+		totalAfterDiscount = 1
+	}
+
+	return discountCents, totalAfterDiscount, promotion.GetCode(), nil
 }

@@ -15,7 +15,7 @@ import (
 type UnitRepository interface {
 	CreateUnit(model.UnitDomainInterface) *rest_err.RestErr
 	FindUnitByID(string) (model.UnitDomainInterface, *rest_err.RestErr)
-	FindUnits() ([]model.UnitDomainInterface, *rest_err.RestErr)
+	FindUnits(int64, int64) ([]model.UnitDomainInterface, *rest_err.RestErr)
 	UpdateUnit(string, model.UnitDomainInterface) (model.UnitDomainInterface, *rest_err.RestErr)
 }
 
@@ -65,11 +65,17 @@ func (ur *unitRepository) FindUnitByID(unitID string) (model.UnitDomainInterface
 	return entity.toDomain(), nil
 }
 
-func (ur *unitRepository) FindUnits() ([]model.UnitDomainInterface, *rest_err.RestErr) {
+func (ur *unitRepository) FindUnits(page, limit int64) ([]model.UnitDomainInterface, *rest_err.RestErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := ur.collection.Find(ctx, bson.M{"active": true})
+	findOptions := options.Find()
+	if page > 0 && limit > 0 {
+		findOptions.SetSkip((page - 1) * limit)
+		findOptions.SetLimit(limit)
+	}
+
+	cursor, err := ur.collection.Find(ctx, bson.M{"active": true}, findOptions)
 	if err != nil {
 		return nil, rest_err.NewInternalServerError("Error trying to find units")
 	}

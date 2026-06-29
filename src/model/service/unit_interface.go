@@ -19,6 +19,6 @@ type unitDomainService struct {
 type UnitDomainService interface {
 	CreateUnit(model.UnitDomainInterface) *rest_err.RestErr
 	FindUnit(string) (model.UnitDomainInterface, *rest_err.RestErr)
-	FindUnits() ([]model.UnitDomainInterface, *rest_err.RestErr)
+	FindUnits(int64, int64) ([]model.UnitDomainInterface, *rest_err.RestErr)
 	UpdateUnit(string, model.UnitDomainInterface) (model.UnitDomainInterface, *rest_err.RestErr)
 }

@@ -27,6 +27,11 @@ func (oc *orderControllerInterface) FindOrders(c *gin.Context) {
 	logger.Info("Iniciando listagem de pedidos", zap.String("jornada", "find_orders"))
 	channel := c.Query("canalPedido")
 	status := c.Query("status")
+	page, limit, paginationErr := getPagination(c)
+	if paginationErr != nil {
+		c.JSON(paginationErr.Code, paginationErr)
+		return
+	}
 
 	if channel != "" && !isValidOrderChannel(channel) {
 		err := rest_err.NewBadRequestError("Invalid canalPedido")
@@ -34,7 +39,7 @@ func (oc *orderControllerInterface) FindOrders(c *gin.Context) {
 		return
 	}
 
-	orderDomains, err := oc.service.FindOrders(channel, status)
+	orderDomains, err := oc.service.FindOrders(channel, status, page, limit)
 	if err != nil {
 		logger.Error("Erro ao tentar listar pedidos", err, zap.String("jornada", "find_orders"))
 		c.JSON(err.Code, err)

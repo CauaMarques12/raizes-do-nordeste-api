@@ -15,8 +15,10 @@ type OrderResponse struct {
 	UnitID        string              `json:"unidadeId"`
 	Channel       string              `json:"canalPedido"`
 	PaymentMethod string              `json:"formaPagamento"`
+	PromotionCode string              `json:"codigoPromocao,omitempty"`
 	Status        string              `json:"status"`
 	TotalCents    int64               `json:"totalCents"`
+	DiscountCents int64               `json:"descontoCents"`
 	Items         []OrderItemResponse `json:"itens"`
 	CreatedAt     time.Time           `json:"createdAt"`
 	UpdatedAt     time.Time           `json:"updatedAt"`

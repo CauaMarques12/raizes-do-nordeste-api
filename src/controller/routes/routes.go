@@ -16,6 +16,8 @@ func InitRoutes(
 	orderController controller.OrderControllerInterface,
 	paymentController controller.PaymentControllerInterface,
 	loyaltyController controller.LoyaltyControllerInterface,
+	menuController controller.MenuControllerInterface,
+	promotionController controller.PromotionControllerInterface,
 ) {
 	r.POST("/auth/login", authController.Login)
 	r.POST("/usuarios", userController.CreateUser)
@@ -32,6 +34,7 @@ func InitRoutes(
 	auth.POST("/unidades", middleware.RoleMiddleware("ADMIN", "GERENTE"), unitController.CreateUnit)
 	auth.GET("/unidades", unitController.FindUnits)
 	auth.GET("/unidades/:unitId", unitController.FindUnitById)
+	auth.GET("/unidades/:unitId/cardapio", menuController.FindMenuByUnit)
 	auth.PATCH("/unidades/:unitId", middleware.RoleMiddleware("ADMIN", "GERENTE"), unitController.UpdateUnit)
 
 	auth.POST("/produtos", middleware.RoleMiddleware("ADMIN", "GERENTE"), productController.CreateProduct)
@@ -55,4 +58,9 @@ func InitRoutes(
 	auth.GET("/fidelidade/saldo", middleware.RoleMiddleware("ADMIN", "GERENTE", "CLIENTE"), loyaltyController.FindBalance)
 	auth.GET("/fidelidade/historico", middleware.RoleMiddleware("ADMIN", "GERENTE", "CLIENTE"), loyaltyController.FindHistory)
 	auth.POST("/fidelidade/resgates", middleware.RoleMiddleware("ADMIN", "GERENTE", "CLIENTE"), loyaltyController.RedeemPoints)
+
+	auth.POST("/promocoes", middleware.RoleMiddleware("ADMIN", "GERENTE"), promotionController.CreatePromotion)
+	auth.GET("/promocoes", promotionController.FindPromotions)
+	auth.GET("/promocoes/:promotionId", promotionController.FindPromotionById)
+	auth.PATCH("/promocoes/:promotionId", middleware.RoleMiddleware("ADMIN", "GERENTE"), promotionController.UpdatePromotion)
 }

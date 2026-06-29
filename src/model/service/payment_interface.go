@@ -27,5 +27,5 @@ type paymentDomainService struct {
 type PaymentDomainService interface {
 	ProcessPayment(model.PaymentDomainInterface) (model.PaymentDomainInterface, *rest_err.RestErr)
 	FindPayment(string) (model.PaymentDomainInterface, *rest_err.RestErr)
-	FindPaymentsByOrderID(string) ([]model.PaymentDomainInterface, *rest_err.RestErr)
+	FindPaymentsByOrderID(string, int64, int64) ([]model.PaymentDomainInterface, *rest_err.RestErr)
 }

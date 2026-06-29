@@ -27,6 +27,7 @@ func (oc *orderControllerInterface) CreateOrder(c *gin.Context) {
 		orderRequest.UnitID,
 		orderRequest.Channel,
 		orderRequest.PaymentMethod,
+		orderRequest.PromotionCode,
 		convertOrderItemsRequestToDomain(orderRequest.Items),
 	)
 

@@ -19,6 +19,6 @@ type productDomainService struct {
 type ProductDomainService interface {
 	CreateProduct(model.ProductDomainInterface) *rest_err.RestErr
 	FindProduct(string) (model.ProductDomainInterface, *rest_err.RestErr)
-	FindProducts(string) ([]model.ProductDomainInterface, *rest_err.RestErr)
+	FindProducts(string, int64, int64) ([]model.ProductDomainInterface, *rest_err.RestErr)
 	UpdateProduct(string, model.ProductDomainInterface) (model.ProductDomainInterface, *rest_err.RestErr)
 }

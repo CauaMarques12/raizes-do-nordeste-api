@@ -20,8 +20,10 @@ type orderEntity struct {
 	UnitID        string            `bson:"unitId"`
 	Channel       string            `bson:"channel"`
 	PaymentMethod string            `bson:"paymentMethod"`
+	PromotionCode string            `bson:"promotionCode,omitempty"`
 	Status        string            `bson:"status"`
 	TotalCents    int64             `bson:"totalCents"`
+	DiscountCents int64             `bson:"discountCents"`
 	Items         []orderItemEntity `bson:"items"`
 	CreatedAt     time.Time         `bson:"createdAt"`
 	UpdatedAt     time.Time         `bson:"updatedAt"`
@@ -42,8 +44,10 @@ func newOrderEntity(orderDomain model.OrderDomainInterface) orderEntity {
 		UnitID:        orderDomain.GetUnitID(),
 		Channel:       orderDomain.GetChannel(),
 		PaymentMethod: orderDomain.GetPaymentMethod(),
+		PromotionCode: orderDomain.GetPromotionCode(),
 		Status:        orderDomain.GetStatus(),
 		TotalCents:    orderDomain.GetTotalCents(),
+		DiscountCents: orderDomain.GetDiscountCents(),
 		Items:         newOrderItemEntities(orderDomain.GetItems()),
 		CreatedAt:     orderDomain.GetCreatedAt(),
 		UpdatedAt:     orderDomain.GetUpdatedAt(),
@@ -62,8 +66,10 @@ func (oe orderEntity) toDomain() model.OrderDomainInterface {
 		oe.UnitID,
 		oe.Channel,
 		oe.PaymentMethod,
+		oe.PromotionCode,
 		oe.Status,
 		oe.TotalCents,
+		oe.DiscountCents,
 		oe.toDomainItems(),
 		oe.CreatedAt,
 		oe.UpdatedAt,

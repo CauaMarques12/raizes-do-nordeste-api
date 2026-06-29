@@ -24,7 +24,13 @@ func (uc *unitControllerInterface) FindUnitById(c *gin.Context) {
 
 func (uc *unitControllerInterface) FindUnits(c *gin.Context) {
 	logger.Info("Iniciando listagem de unidades", zap.String("jornada", "find_units"))
-	unitDomains, err := uc.service.FindUnits()
+	page, limit, err := getPagination(c)
+	if err != nil {
+		c.JSON(err.Code, err)
+		return
+	}
+
+	unitDomains, err := uc.service.FindUnits(page, limit)
 	if err != nil {
 		logger.Error("Erro ao tentar listar unidades", err, zap.String("jornada", "find_units"))
 		c.JSON(err.Code, err)

@@ -25,7 +25,13 @@ func (pc *productControllerInterface) FindProductById(c *gin.Context) {
 func (pc *productControllerInterface) FindProducts(c *gin.Context) {
 	logger.Info("Iniciando listagem de produtos", zap.String("jornada", "find_products"))
 	category := c.Query("category")
-	productDomains, err := pc.service.FindProducts(category)
+	page, limit, err := getPagination(c)
+	if err != nil {
+		c.JSON(err.Code, err)
+		return
+	}
+
+	productDomains, err := pc.service.FindProducts(category, page, limit)
 	if err != nil {
 		logger.Error("Erro ao tentar listar produtos", err, zap.String("jornada", "find_products"))
 		c.JSON(err.Code, err)

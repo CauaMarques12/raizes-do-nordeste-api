@@ -9,6 +9,6 @@ func (ud *unitDomainService) FindUnit(unitID string) (model.UnitDomainInterface,
 	return ud.repository.FindUnitByID(unitID)
 }
 
-func (ud *unitDomainService) FindUnits() ([]model.UnitDomainInterface, *rest_err.RestErr) {
-	return ud.repository.FindUnits()
+func (ud *unitDomainService) FindUnits(page, limit int64) ([]model.UnitDomainInterface, *rest_err.RestErr) {
+	return ud.repository.FindUnits(page, limit)
 }

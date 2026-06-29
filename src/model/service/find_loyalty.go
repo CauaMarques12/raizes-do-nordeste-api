@@ -21,10 +21,10 @@ func (ld *loyaltyDomainService) FindBalance(userID string) (model.LoyaltyBalance
 	return balance, nil
 }
 
-func (ld *loyaltyDomainService) FindMovements(userID string) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr) {
+func (ld *loyaltyDomainService) FindMovements(userID string, page, limit int64) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr) {
 	if _, err := ld.userRepository.FindUserByID(userID); err != nil {
 		return nil, err
 	}
 
-	return ld.loyaltyRepository.FindMovements(userID)
+	return ld.loyaltyRepository.FindMovements(userID, page, limit)
 }

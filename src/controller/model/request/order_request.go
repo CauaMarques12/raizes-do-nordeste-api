@@ -11,6 +11,7 @@ type OrderRequest struct {
 	UnitID        string             `json:"unidadeId" binding:"required"`
 	Items         []OrderItemRequest `json:"itens" binding:"required,min=1,dive"`
 	PaymentMethod string             `json:"formaPagamento" binding:"required,oneof=MOCK"`
+	PromotionCode string             `json:"codigoPromocao" binding:"omitempty,alphanum,min=3,max=30"`
 }
 
 type OrderStatusRequest struct {

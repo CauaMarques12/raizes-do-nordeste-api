@@ -15,7 +15,7 @@ import (
 type LoyaltyRepository interface {
 	CreateMovement(model.LoyaltyMovementDomainInterface) *rest_err.RestErr
 	FindBalance(string) (model.LoyaltyBalanceDomainInterface, *rest_err.RestErr)
-	FindMovements(string) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr)
+	FindMovements(string, int64, int64) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr)
 }
 
 type loyaltyRepository struct {
@@ -85,14 +85,20 @@ func (lr *loyaltyRepository) FindBalance(userID string) (model.LoyaltyBalanceDom
 	return entity.toDomain(), nil
 }
 
-func (lr *loyaltyRepository) FindMovements(userID string) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr) {
+func (lr *loyaltyRepository) FindMovements(userID string, page, limit int64) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	findOptions := options.Find().SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	if page > 0 && limit > 0 {
+		findOptions.SetSkip((page - 1) * limit)
+		findOptions.SetLimit(limit)
+	}
 
 	cursor, err := lr.movementCollection.Find(
 		ctx,
 		bson.M{"userId": userID},
-		options.Find().SetSort(bson.D{{Key: "createdAt", Value: -1}}),
+		findOptions,
 	)
 	if err != nil {
 		return nil, rest_err.NewInternalServerError("Erro ao tentar buscar historico de fidelidade")

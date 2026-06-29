@@ -27,6 +27,8 @@ func main() {
 	orderService := service.NewOrderDomainService()
 	paymentService := service.NewPaymentDomainService()
 	loyaltyService := service.NewLoyaltyDomainService()
+	menuService := service.NewMenuDomainService()
+	promotionService := service.NewPromotionDomainService()
 	userController := controller.NewUserControlleInterface(userService)
 	authController := controller.NewAuthControllerInterface(authService)
 	unitController := controller.NewUnitControllerInterface(unitService)
@@ -35,6 +37,8 @@ func main() {
 	orderController := controller.NewOrderControllerInterface(orderService)
 	paymentController := controller.NewPaymentControllerInterface(paymentService)
 	loyaltyController := controller.NewLoyaltyControllerInterface(loyaltyService)
+	menuController := controller.NewMenuControllerInterface(menuService)
+	promotionController := controller.NewPromotionControllerInterface(promotionService)
 
 	router := gin.Default()
 	routes.InitRoutes(
@@ -47,6 +51,8 @@ func main() {
 		orderController,
 		paymentController,
 		loyaltyController,
+		menuController,
+		promotionController,
 	)
 
 	port := os.Getenv("PORT")

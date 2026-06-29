@@ -9,10 +9,10 @@ func (pd *paymentDomainService) FindPayment(paymentID string) (model.PaymentDoma
 	return pd.paymentRepository.FindPaymentByID(paymentID)
 }
 
-func (pd *paymentDomainService) FindPaymentsByOrderID(orderID string) ([]model.PaymentDomainInterface, *rest_err.RestErr) {
+func (pd *paymentDomainService) FindPaymentsByOrderID(orderID string, page, limit int64) ([]model.PaymentDomainInterface, *rest_err.RestErr) {
 	if _, err := pd.orderRepository.FindOrderByID(orderID); err != nil {
 		return nil, err
 	}
 
-	return pd.paymentRepository.FindPaymentsByOrderID(orderID)
+	return pd.paymentRepository.FindPaymentsByOrderID(orderID, page, limit)
 }

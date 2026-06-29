@@ -35,8 +35,13 @@ func (lc *loyaltyControllerInterface) FindHistory(c *gin.Context) {
 		c.JSON(err.Code, err)
 		return
 	}
+	page, limit, paginationErr := getPagination(c)
+	if paginationErr != nil {
+		c.JSON(paginationErr.Code, paginationErr)
+		return
+	}
 
-	movementsDomain, restErr := lc.service.FindMovements(clientID)
+	movementsDomain, restErr := lc.service.FindMovements(clientID, page, limit)
 	if restErr != nil {
 		logger.Error("Erro ao tentar consultar historico de fidelidade", restErr, zap.String("jornada", "find_loyalty_history"))
 		c.JSON(restErr.Code, restErr)

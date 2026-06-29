@@ -110,8 +110,10 @@ func ConvertOrderDomainToResponse(
 		UnitID:        orderDomain.GetUnitID(),
 		Channel:       orderDomain.GetChannel(),
 		PaymentMethod: orderDomain.GetPaymentMethod(),
+		PromotionCode: orderDomain.GetPromotionCode(),
 		Status:        orderDomain.GetStatus(),
 		TotalCents:    orderDomain.GetTotalCents(),
+		DiscountCents: orderDomain.GetDiscountCents(),
 		Items:         convertOrderItemsToResponse(orderDomain.GetItems()),
 		CreatedAt:     orderDomain.GetCreatedAt(),
 		UpdatedAt:     orderDomain.GetUpdatedAt(),
@@ -193,6 +195,56 @@ func ConvertPaymentDomainsToResponse(
 	}
 
 	return paymentResponses
+}
+
+func ConvertMenuItemDomainToResponse(
+	menuItemDomain model.MenuItemDomainInterface,
+) response.MenuItemResponse {
+	return response.MenuItemResponse{
+		ProductID:   menuItemDomain.GetProductID(),
+		Name:        menuItemDomain.GetName(),
+		Description: menuItemDomain.GetDescription(),
+		Category:    menuItemDomain.GetCategory(),
+		PriceCents:  menuItemDomain.GetPriceCents(),
+		Quantity:    menuItemDomain.GetQuantity(),
+		Available:   menuItemDomain.GetAvailable(),
+	}
+}
+
+func ConvertMenuItemDomainsToResponse(
+	menuItemDomains []model.MenuItemDomainInterface,
+) []response.MenuItemResponse {
+	menuItemResponses := make([]response.MenuItemResponse, 0, len(menuItemDomains))
+	for _, menuItemDomain := range menuItemDomains {
+		menuItemResponses = append(menuItemResponses, ConvertMenuItemDomainToResponse(menuItemDomain))
+	}
+
+	return menuItemResponses
+}
+
+func ConvertPromotionDomainToResponse(
+	promotionDomain model.PromotionDomainInterface,
+) response.PromotionResponse {
+	return response.PromotionResponse{
+		ID:              promotionDomain.GetID(),
+		Name:            promotionDomain.GetName(),
+		Code:            promotionDomain.GetCode(),
+		DiscountPercent: promotionDomain.GetDiscountPercent(),
+		Active:          promotionDomain.GetActive(),
+		CreatedAt:       promotionDomain.GetCreatedAt(),
+		UpdatedAt:       promotionDomain.GetUpdatedAt(),
+	}
+}
+
+func ConvertPromotionDomainsToResponse(
+	promotionDomains []model.PromotionDomainInterface,
+) []response.PromotionResponse {
+	promotionResponses := make([]response.PromotionResponse, 0, len(promotionDomains))
+	for _, promotionDomain := range promotionDomains {
+		promotionResponses = append(promotionResponses, ConvertPromotionDomainToResponse(promotionDomain))
+	}
+
+	return promotionResponses
 }
 
 func convertOrderItemsToResponse(

@@ -20,6 +20,6 @@ type loyaltyDomainService struct {
 
 type LoyaltyDomainService interface {
 	FindBalance(string) (model.LoyaltyBalanceDomainInterface, *rest_err.RestErr)
-	FindMovements(string) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr)
+	FindMovements(string, int64, int64) ([]model.LoyaltyMovementDomainInterface, *rest_err.RestErr)
 	RedeemPoints(string, int64) (model.LoyaltyMovementDomainInterface, *rest_err.RestErr)
 }

@@ -15,6 +15,8 @@ type OrderDomainInterface interface {
 	GetUnitID() string
 	GetChannel() string
 	GetPaymentMethod() string
+	GetPromotionCode() string
+	GetDiscountCents() int64
 	GetStatus() string
 	GetTotalCents() int64
 	GetItems() []OrderItemDomain
@@ -23,11 +25,13 @@ type OrderDomainInterface interface {
 	SetID(string)
 	SetStatus(string)
 	SetTotalCents(int64)
+	SetDiscountCents(int64)
+	SetPromotionCode(string)
 	SetItems([]OrderItemDomain)
 }
 
 func NewOrderDomain(
-	clientID, unitID, channel, paymentMethod string,
+	clientID, unitID, channel, paymentMethod, promotionCode string,
 	items []OrderItemDomain,
 ) OrderDomainInterface {
 	now := time.Now().UTC()
@@ -36,6 +40,7 @@ func NewOrderDomain(
 		unitID:        unitID,
 		channel:       channel,
 		paymentMethod: paymentMethod,
+		promotionCode: promotionCode,
 		status:        "AGUARDANDO_PAGAMENTO",
 		items:         items,
 		createdAt:     now,
@@ -44,8 +49,8 @@ func NewOrderDomain(
 }
 
 func NewOrderDomainWithID(
-	id, clientID, unitID, channel, paymentMethod, status string,
-	totalCents int64,
+	id, clientID, unitID, channel, paymentMethod, promotionCode, status string,
+	totalCents, discountCents int64,
 	items []OrderItemDomain,
 	createdAt, updatedAt time.Time,
 ) OrderDomainInterface {
@@ -55,8 +60,10 @@ func NewOrderDomainWithID(
 		unitID:        unitID,
 		channel:       channel,
 		paymentMethod: paymentMethod,
+		promotionCode: promotionCode,
 		status:        status,
 		totalCents:    totalCents,
+		discountCents: discountCents,
 		items:         items,
 		createdAt:     createdAt,
 		updatedAt:     updatedAt,
@@ -69,8 +76,10 @@ type orderDomain struct {
 	unitID        string
 	channel       string
 	paymentMethod string
+	promotionCode string
 	status        string
 	totalCents    int64
+	discountCents int64
 	items         []OrderItemDomain
 	createdAt     time.Time
 	updatedAt     time.Time
@@ -94,6 +103,14 @@ func (od *orderDomain) GetChannel() string {
 
 func (od *orderDomain) GetPaymentMethod() string {
 	return od.paymentMethod
+}
+
+func (od *orderDomain) GetPromotionCode() string {
+	return od.promotionCode
+}
+
+func (od *orderDomain) GetDiscountCents() int64 {
+	return od.discountCents
 }
 
 func (od *orderDomain) GetStatus() string {
@@ -126,6 +143,14 @@ func (od *orderDomain) SetStatus(status string) {
 
 func (od *orderDomain) SetTotalCents(totalCents int64) {
 	od.totalCents = totalCents
+}
+
+func (od *orderDomain) SetDiscountCents(discountCents int64) {
+	od.discountCents = discountCents
+}
+
+func (od *orderDomain) SetPromotionCode(promotionCode string) {
+	od.promotionCode = promotionCode
 }
 
 func (od *orderDomain) SetItems(items []OrderItemDomain) {
