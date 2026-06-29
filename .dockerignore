@@ -1,0 +1,9 @@
+.git
+.env
+tmp
+*.exe
+*.test
+coverage.*
+README.md
+postman
+Roteiro de Atividade Pratica - 2026 - Projeto Back End.pdf

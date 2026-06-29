@@ -1,0 +1,25 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: raizes-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  api:
+    build: .
+    container_name: raizes-api
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DATABASE: raizes_do_nordeste
+      JWT_SECRET: raizes-do-nordeste-dev-secret
+      JWT_EXPIRES_IN: 3600
+
+volumes:
+  mongodb_data:

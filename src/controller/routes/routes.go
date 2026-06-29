@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/CauaMarques12/raizes-do-nordeste-api/src/configuration/middleware"
 	"github.com/CauaMarques12/raizes-do-nordeste-api/src/controller"
 	"github.com/gin-gonic/gin"
@@ -19,6 +21,13 @@ func InitRoutes(
 	menuController controller.MenuControllerInterface,
 	promotionController controller.PromotionControllerInterface,
 ) {
+	r.GET("/swagger", serveSwagger)
+	r.GET("/swagger/index.html", serveSwagger)
+	r.GET("/swagger/openapi.yaml", func(c *gin.Context) {
+		c.Header("Content-Type", "application/yaml; charset=utf-8")
+		c.File("docs/openapi.yaml")
+	})
+
 	r.POST("/auth/login", authController.Login)
 	r.POST("/usuarios", userController.CreateUser)
 
@@ -63,4 +72,27 @@ func InitRoutes(
 	auth.GET("/promocoes", promotionController.FindPromotions)
 	auth.GET("/promocoes/:promotionId", promotionController.FindPromotionById)
 	auth.PATCH("/promocoes/:promotionId", middleware.RoleMiddleware("ADMIN", "GERENTE"), promotionController.UpdatePromotion)
+}
+
+func serveSwagger(c *gin.Context) {
+	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(`<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Raizes do Nordeste API</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = function() {
+      SwaggerUIBundle({
+        url: "/swagger/openapi.yaml",
+        dom_id: "#swagger-ui"
+      });
+    };
+  </script>
+</body>
+</html>`))
 }

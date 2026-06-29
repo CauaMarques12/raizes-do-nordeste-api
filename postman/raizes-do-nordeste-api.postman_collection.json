@@ -1,0 +1,810 @@
+{
+  "info": {
+    "name": "Raizes do Nordeste API",
+    "description": "Collection para testar o fluxo principal da API do trabalho: usuarios, unidades, produtos, estoque, cardapio, promocoes, pedidos, pagamento mock e fidelidade.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "password",
+      "value": "Senha@12345"
+    },
+    {
+      "key": "admin_email",
+      "value": ""
+    },
+    {
+      "key": "client_email",
+      "value": ""
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "client_token",
+      "value": ""
+    },
+    {
+      "key": "admin_id",
+      "value": ""
+    },
+    {
+      "key": "client_id",
+      "value": ""
+    },
+    {
+      "key": "unit_id",
+      "value": ""
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "promotion_id",
+      "value": ""
+    },
+    {
+      "key": "promo_code",
+      "value": ""
+    },
+    {
+      "key": "order_id",
+      "value": ""
+    },
+    {
+      "key": "order_total",
+      "value": "1"
+    },
+    {
+      "key": "payment_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Auth e usuarios",
+      "item": [
+        {
+          "name": "Criar admin",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('admin_email', `admin-${Date.now()}@teste.com`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('admin_id', data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"Admin Postman\",\n  \"role\": \"ADMIN\",\n  \"fidelidadeConsentida\": true\n}"
+            },
+            "url": "{{base_url}}/usuarios"
+          }
+        },
+        {
+          "name": "Login admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('admin_token', data.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Criar cliente",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('client_email', `cliente-${Date.now()}@teste.com`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('client_id', data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{client_email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"Cliente Postman\",\n  \"role\": \"CLIENTE\",\n  \"fidelidadeConsentida\": true\n}"
+            },
+            "url": "{{base_url}}/usuarios"
+          }
+        },
+        {
+          "name": "Login cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('client_token', data.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{client_email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Buscar usuario logado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/usuarios/me"
+          }
+        },
+        {
+          "name": "Atualizar consentimento fidelidade",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fidelidadeConsentida\": true\n}"
+            },
+            "url": "{{base_url}}/usuarios/me/consentimentos/fidelidade"
+          }
+        },
+        {
+          "name": "Buscar usuario por email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/usuarios?email={{client_email}}"
+          }
+        },
+        {
+          "name": "Atualizar usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente Postman Atualizado\"\n}"
+            },
+            "url": "{{base_url}}/usuarios/{{client_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Catalogo, estoque e promocoes",
+      "item": [
+        {
+          "name": "Criar unidade",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('unit_id', data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Unidade Postman\",\n  \"address\": \"Rua do Teste 123\",\n  \"city\": \"Recife\",\n  \"state\": \"PE\"\n}"
+            },
+            "url": "{{base_url}}/unidades"
+          }
+        },
+        {
+          "name": "Listar unidades paginado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/unidades?page=1&limit=10"
+          }
+        },
+        {
+          "name": "Criar produto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('product_id', data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cuscuz Postman\",\n  \"description\": \"Produto criado pela collection\",\n  \"category\": \"comida\",\n  \"priceCents\": 2000\n}"
+            },
+            "url": "{{base_url}}/produtos"
+          }
+        },
+        {
+          "name": "Listar produtos paginado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/produtos?category=comida&page=1&limit=10"
+          }
+        },
+        {
+          "name": "Entrada de estoque",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeId\": \"{{unit_id}}\",\n  \"produtoId\": \"{{product_id}}\",\n  \"tipo\": \"ENTRADA\",\n  \"quantidade\": 5,\n  \"motivo\": \"entrada inicial postman\"\n}"
+            },
+            "url": "{{base_url}}/estoque/movimentacoes"
+          }
+        },
+        {
+          "name": "Consultar estoque",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/estoque?unidadeId={{unit_id}}&produtoId={{product_id}}"
+          }
+        },
+        {
+          "name": "Consultar cardapio por unidade",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/unidades/{{unit_id}}/cardapio?category=comida&page=1&limit=10"
+          }
+        },
+        {
+          "name": "Criar promocao",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('promo_code', `PROMO${Date.now()}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('promotion_id', data.id);",
+                  "pm.collectionVariables.set('promo_code', data.code);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Promocao Postman\",\n  \"code\": \"{{promo_code}}\",\n  \"discountPercent\": 25,\n  \"active\": true\n}"
+            },
+            "url": "{{base_url}}/promocoes"
+          }
+        },
+        {
+          "name": "Listar promocoes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/promocoes?active=true&page=1&limit=10"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Pedido, pagamento e fidelidade",
+      "item": [
+        {
+          "name": "Criar pedido com promocao",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('order_id', data.id);",
+                  "pm.collectionVariables.set('order_total', data.totalCents);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"canalPedido\": \"APP\",\n  \"clienteId\": \"{{client_id}}\",\n  \"unidadeId\": \"{{unit_id}}\",\n  \"formaPagamento\": \"MOCK\",\n  \"codigoPromocao\": \"{{promo_code}}\",\n  \"itens\": [\n    {\n      \"produtoId\": \"{{product_id}}\",\n      \"quantidade\": 2\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/pedidos"
+          }
+        },
+        {
+          "name": "Listar pedidos por canal",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/pedidos?canalPedido=APP&page=1&limit=10"
+          }
+        },
+        {
+          "name": "Buscar pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/pedidos/{{order_id}}"
+          }
+        },
+        {
+          "name": "Pagamento aprovado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('payment_id', data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": \"{{order_id}}\",\n  \"valorCents\": {{order_total}},\n  \"aprovado\": true\n}"
+            },
+            "url": "{{base_url}}/pagamentos"
+          }
+        },
+        {
+          "name": "Buscar pagamento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/pagamentos/{{payment_id}}"
+          }
+        },
+        {
+          "name": "Listar pagamentos do pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/pagamentos?pedidoId={{order_id}}&page=1&limit=10"
+          }
+        },
+        {
+          "name": "Consultar saldo fidelidade",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/fidelidade/saldo"
+          }
+        },
+        {
+          "name": "Consultar historico fidelidade",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/fidelidade/historico?page=1&limit=10"
+          }
+        },
+        {
+          "name": "Resgatar pontos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pontos\": 1\n}"
+            },
+            "url": "{{base_url}}/fidelidade/resgates"
+          }
+        },
+        {
+          "name": "Status EM_PREPARO",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"EM_PREPARO\"\n}"
+            },
+            "url": "{{base_url}}/pedidos/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "Status PRONTO",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PRONTO\"\n}"
+            },
+            "url": "{{base_url}}/pedidos/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "Status ENTREGUE",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ENTREGUE\"\n}"
+            },
+            "url": "{{base_url}}/pedidos/{{order_id}}/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Erros esperados",
+      "item": [
+        {
+          "name": "Sem token - listar pedidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/pedidos"
+          }
+        },
+        {
+          "name": "Sem permissao - cliente cria promocao",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Promocao Proibida\",\n  \"code\": \"CLIENTE999\",\n  \"discountPercent\": 5,\n  \"active\": true\n}"
+            },
+            "url": "{{base_url}}/promocoes"
+          }
+        },
+        {
+          "name": "Paginacao invalida",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": "{{base_url}}/produtos?page=0&limit=10"
+          }
+        },
+        {
+          "name": "Pedido sem canalPedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": \"{{client_id}}\",\n  \"unidadeId\": \"{{unit_id}}\",\n  \"formaPagamento\": \"MOCK\",\n  \"itens\": [\n    {\n      \"produtoId\": \"{{product_id}}\",\n      \"quantidade\": 1\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/pedidos"
+          }
+        },
+        {
+          "name": "Pedido com estoque insuficiente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"canalPedido\": \"APP\",\n  \"clienteId\": \"{{client_id}}\",\n  \"unidadeId\": \"{{unit_id}}\",\n  \"formaPagamento\": \"MOCK\",\n  \"itens\": [\n    {\n      \"produtoId\": \"{{product_id}}\",\n      \"quantidade\": 999\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/pedidos"
+          }
+        }
+      ]
+    }
+  ]
+}
