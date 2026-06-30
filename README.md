@@ -83,12 +83,45 @@ A API sobe em:
 http://localhost:8080
 ```
 
+## Seed
+
+O projeto tem um seed simples para criar massa inicial no MongoDB. Ele pode ser rodado mais de uma vez sem duplicar os registros principais.
+
+Com o MongoDB ligado, rode:
+
+```bash
+go run ./cmd/seed
+```
+
+Ele cria:
+
+- usuario `ADMIN`
+- usuario `CLIENTE`
+- uma unidade
+- tres produtos
+- estoque inicial
+- promocao `NORDESTE10`
+- saldo inicial de fidelidade do cliente
+
+Credenciais criadas pelo seed:
+
+```text
+Admin: admin@raizes.dev / Admin@123
+Cliente: cliente@raizes.dev / Cliente@123
+```
+
 ## Rodando tudo com Docker Compose
 
 Esse e o jeito mais simples em outro PC, porque ja sobe API e MongoDB juntos:
 
 ```bash
 docker compose up --build
+```
+
+Para executar o seed usando o container da API:
+
+```bash
+docker compose exec api go run ./cmd/seed
 ```
 
 Para parar:
@@ -226,13 +259,23 @@ Promocoes:
 
 ## Testes
 
-O projeto ainda nao tem testes automatizados escritos, mas da para validar compilacao com:
+O projeto tem um teste HTTP simples usando `httptest`. Ele sobe as rotas em memoria, usa o MongoDB em um banco separado chamado `raizes_do_nordeste_test`, executa o seed e valida um fluxo basico:
+
+- rota protegida sem token retorna `401`
+- cliente tentando criar unidade retorna `403`
+- login do cliente retorna token
+- criacao de pedido com estoque retorna `201`
+- pagamento mock aprovado retorna `201`
+- pedido pago fica com status `PAGO`
+- pedido sem estoque suficiente retorna `409`
+
+Para rodar:
 
 ```bash
 go test ./...
 ```
 
-Para teste manual, use o Swagger ou a collection do Postman.
+O MongoDB precisa estar ligado. Se ele nao estiver disponivel, o teste de integracao e pulado. Para teste manual, use o Swagger ou a collection do Postman.
 
 ## Observacoes
 
